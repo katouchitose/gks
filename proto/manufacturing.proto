@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+package gks.manufacturing;
+
+import "common.proto";
+import "geometry.proto";
+
+option java_multiple_files = true;
+option java_package = "gks.manufacturing";
+
+// =============================================================================
+// 制造域（L5），依赖 common, geometry
+// =============================================================================
+
+// 刀具
+message WorkTool {
+  gks.common.ToolType tool_type = 1;
+  map<string, string> parameters = 2;
+}
+
+// 工艺参数（RealBevelAngle 为执行角度，可与 Feature.Angle 相同，允许未来做补偿）
+message WorkTechnology {
+  gks.common.CuttingMode cutting_mode = 1;
+  double real_bevel_angle = 2;  // 度
+  double power = 3;             // MVP 预留
+  int32 layer = 4;              // MVP 预留
+}
+
+// 刀路（计算结果，不可手动编辑，不包含空移）
+message WorkToolPath {
+  repeated gks.geometry.WorkGeometry geometry_sequence = 1;
+}
+
+// 加工操作（id 与 WorkStep.operation_id 对应，便于前后端组装）
+message WorkOperation {
+  string id = 1;
+  WorkTool tool = 2;
+  WorkTechnology technology = 3;
+  WorkToolPath tool_path = 4;
+}

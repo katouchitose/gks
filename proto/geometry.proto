@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package gks.geometry;
+
+import "common.proto";
+
+option java_multiple_files = true;
+option java_package = "gks.geometry";
+
+// =============================================================================
+// 几何类型与参数（L3，依赖 common）
+// =============================================================================
+
+// 直线参数：起点、终点
+message LineParams {
+  gks.common.Point2 start = 1;
+  gks.common.Point2 end = 2;
+}
+
+// 圆弧参数：圆心、半径、起始角、终止角（弧度）
+message ArcParams {
+  gks.common.Point2 center = 1;
+  double radius = 2;
+  double start_angle = 3;
+  double end_angle = 4;
+}
+
+// 圆参数：圆心、半径
+message CircleParams {
+  gks.common.Point2 center = 1;
+  double radius = 2;
+}
+
+// 多段线参数：有序点列
+message PolylineParams {
+  repeated gks.common.Point2 points = 1;
+}
+
+// 几何图元（可被多个 WorkFeature 引用，共边通过共享实现）
+message WorkGeometry {
+  string id = 1;
+  gks.common.GeometryType type = 2;
+  oneof parameters {
+    LineParams line = 3;
+    ArcParams arc = 4;
+    CircleParams circle = 5;
+    PolylineParams polyline = 6;
+  }
+}

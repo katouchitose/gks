@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+package gks.common;
+
+option java_multiple_files = true;
+option java_package = "gks.common";
+
+// =============================================================================
+// 公共类型与枚举（L3 基础，无依赖）
+// =============================================================================
+
+// 二维点
+message Point2 {
+  double x = 1;
+  double y = 2;
+}
+
+// 加工特征类型（外轮廓 / 内轮廓 / 边组）
+enum FeatureType {
+  FEATURE_TYPE_UNSPECIFIED = 0;
+  FEATURE_TYPE_OUTER = 1;
+  FEATURE_TYPE_INNER = 2;
+  FEATURE_TYPE_EDGE_GROUP = 3;
+}
+
+// 几何图元类型
+enum GeometryType {
+  GEOMETRY_TYPE_UNSPECIFIED = 0;
+  GEOMETRY_TYPE_LINE = 1;
+  GEOMETRY_TYPE_ARC = 2;
+  GEOMETRY_TYPE_CIRCLE = 3;
+  GEOMETRY_TYPE_POLYLINE = 4;
+}
+
+// 坡口方向（左 / 右）
+enum BevelSide {
+  BEVEL_SIDE_UNSPECIFIED = 0;
+  BEVEL_SIDE_LEFT = 1;
+  BEVEL_SIDE_RIGHT = 2;
+}
+
+// 坡口类型（V / X / 无）
+enum BevelType {
+  BEVEL_TYPE_UNSPECIFIED = 0;
+  BEVEL_TYPE_NONE = 1;
+  BEVEL_TYPE_V = 2;
+  BEVEL_TYPE_X = 3;
+}
+
+// 切割模式（MVP 可扩展）
+enum CuttingMode {
+  CUTTING_MODE_UNSPECIFIED = 0;
+  CUTTING_MODE_LASER = 1;
+  CUTTING_MODE_PLASMA = 2;
+  CUTTING_MODE_FLAME = 3;
+}
+
+// 刀具类型（MVP 可扩展）
+enum ToolType {
+  TOOL_TYPE_UNSPECIFIED = 0;
+  TOOL_TYPE_CUTTING = 1;
+}

@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package gks.api;
+
+import "design.proto";
+import "planning.proto";
+import "manufacturing.proto";
+
+option java_multiple_files = true;
+option java_package = "gks.api";
+
+// =============================================================================
+// 前后端通信请求/响应（引用 design, planning, manufacturing）
+// =============================================================================
+
+// 校验错误项
+message ValidationError {
+  string code = 1;
+  string message = 2;
+  string entity_id = 3;  // 可选：关联的 piece/feature/geometry id
+}
+
+// 更新设计（前端提交完整或增量设计域数据，后端校验并返回规范后的数据）
+message UpdateDesignRequest {
+  gks.design.CAMFile design = 1;
+}
+
+message UpdateDesignResponse {
+  gks.design.CAMFile design = 1;              // 规范后的完整设计
+  repeated ValidationError validation_errors = 2;
+}
+
+// 获取刀路（后端根据当前设计生成工艺计划与制造域数据）
+message GetToolpathRequest {
+  gks.design.CAMFile design = 1;  // 当前设计，后端据此生成 WorkPlan + WorkOperation
+}
+
+message GetToolpathResponse {
+  gks.planning.WorkPlan plan = 1;
+  repeated gks.manufacturing.WorkOperation operations = 2;  // 与 plan.steps[].operation_id 对应
+  repeated ValidationError validation_errors = 3;
+}
+
+// 保存工程
+message SaveProjectRequest {
+  string path = 1;
+  gks.design.CAMFile design = 2;
+  optional gks.planning.WorkPlan plan = 3;  // 可选，若前端已缓存刀路
+}
+
+message SaveProjectResponse {
+  bool success = 1;
+  repeated ValidationError errors = 2;
+}
+
+// 加载工程
+message LoadProjectRequest {
+  string path = 1;
+}
+
+message LoadProjectResponse {
+  gks.design.CAMFile design = 1;
+  optional gks.planning.WorkPlan plan = 2;  // 若工程内包含刀路
+  repeated gks.manufacturing.WorkOperation operations = 3;
+  repeated ValidationError errors = 4;
+}

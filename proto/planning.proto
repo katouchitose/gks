@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package gks.planning;
+
+option java_multiple_files = true;
+option java_package = "gks.planning";
+
+// =============================================================================
+// 工艺规划域（L4），仅引用 id，不依赖 manufacturing（由后端组装 WorkOperation）
+// =============================================================================
+
+// 快速移动链接（MVP 可为空或简单 id 列表）
+message RapidLinks {
+  repeated string link_ids = 1;
+}
+
+// 加工步骤（MVP 中一个 Step 只包含一个 Operation，Step 不可复用）
+message WorkStep {
+  string id = 1;
+  repeated string feature_refs = 2;  // WorkFeature.id
+  string operation_id = 3;           // 对应制造域 WorkOperation，由后端组装
+  RapidLinks rapid_links = 4;
+}
+
+// 工艺计划
+message WorkPlan {
+  repeated WorkStep steps = 1;
+}

@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package gks.design;
+
+import "common.proto";
+import "geometry.proto";
+
+option java_multiple_files = true;
+option java_package = "gks.design";
+
+// =============================================================================
+// 设计域（L2 + L1 + L0），依赖 common, geometry
+// 定义顺序：Placement → BevelRequirement → WorkFeature → WorkBlank → WorkPiece → CAMFile
+// =============================================================================
+
+// 排样位姿（排样唯一入口，不污染 Geometry/Feature）
+message Placement {
+  double x = 1;
+  double y = 2;
+  double rotation = 3;  // 弧度
+}
+
+// 坡口要求（设计层，用于共边判断，不包含执行参数）
+message BevelRequirement {
+  bool enabled = 1;
+  double angle = 2;   // 度
+  gks.common.BevelSide side = 3;
+  gks.common.BevelType type = 4;
+}
+
+// 加工特征（表达加工意图与坡口，作为工艺规划输入单元）
+message WorkFeature {
+  string id = 1;
+  repeated string geometry_ids = 2;  // 共边 = 多 Feature 引用同一 geometry_id
+  gks.common.FeatureType feature_type = 3;
+  optional BevelRequirement bevel_requirement = 4;
+}
+
+// 坯料（可选）
+message WorkBlank {
+  string id = 1;
+  gks.geometry.WorkGeometry geometry = 2;
+}
+
+// 零件（Placement 为排样唯一入口，不包含制造信息）
+message WorkPiece {
+  string id = 1;
+  Placement placement = 2;
+  repeated string outer_geometry_ids = 3;  // 外轮廓几何 id 列表
+  repeated WorkFeature features = 4;
+}
+
+// 工程根（设计域完整树；几何池供所有 piece/feature 通过 id 引用）
+message CAMFile {
+  optional WorkBlank work_blank = 1;
+  repeated WorkPiece work_pieces = 2;
+  repeated gks.geometry.WorkGeometry geometries = 3;  // 全局几何池，共边通过多 feature 引用同一 id 实现
+}
