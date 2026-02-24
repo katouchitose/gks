@@ -31,9 +31,35 @@ message CircleParams {
   double radius = 2;
 }
 
-// 多段线参数：有序点列
+// 多段线单段：直线（起点 = 上一段终点；首段起点 = 多段线 start）
+message LineSegment {
+  gks.common.Point2 end = 1;
+}
+
+// 多段线单段：圆弧（起点 = 上一段终点；终点 = center + radius*(cos(end_angle), sin(end_angle))）
+message ArcSegment {
+  gks.common.Point2 center = 1;
+  double radius = 2;
+  double end_angle = 3;   // 弧度
+  bool clockwise = 4;     // 顺/逆时针方向
+}
+
+// 多段线一段（直线或圆弧），可选指定段末拐点过渡方式
+message PolylineSegment {
+  oneof segment {
+    LineSegment line = 1;
+    ArcSegment arc = 2;
+  }
+  // 本段终点处的拐点过渡方式；省略则使用多段线 default_corner_transition
+  gks.common.CornerTransition corner_after = 3;
+}
+
+// 多段线参数：起点 + 段序列；拐点 = 段与段连接处，由段几何唯一确定
 message PolylineParams {
-  repeated gks.common.Point2 points = 1;
+  gks.common.Point2 start = 1;
+  repeated PolylineSegment segments = 2;
+  // 未在 segment.corner_after 覆盖的拐点均按此方式；默认锐棱
+  gks.common.CornerTransition default_corner_transition = 3;
 }
 
 // 几何图元（可被多个 WorkFeature 引用，共边通过共享实现）

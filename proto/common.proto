@@ -60,3 +60,10 @@ enum ToolType {
   TOOL_TYPE_UNSPECIFIED = 0;
   TOOL_TYPE_CUTTING = 1;
 }
+
+// 拐点过渡类型（多段线段与段连接处）
+enum CornerTransition {
+  CORNER_TRANSITION_UNSPECIFIED = 0;
+  CORNER_TRANSITION_SHARP = 1;   // 锐棱，两段坡口面交于棱线
+  CORNER_TRANSITION_BLEND = 2;  // 预留：后续圆角/混合
+}
